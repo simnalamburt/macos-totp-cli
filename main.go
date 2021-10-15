@@ -21,7 +21,7 @@ const serviceName = "macOS TOTP CLI"
 
 func main() {
 	var cmdScan = &cobra.Command{
-		Use:   "scan <path of the QR image> <service name>",
+		Use:   "scan <image> <name>",
 		Short: "Scan a QR code image",
 		Long:  `Scan a QR code image and store it to the macOS keychain.`,
 		Args:  cobra.ExactArgs(2),
@@ -107,7 +107,7 @@ func main() {
 	}
 
 	var cmdGet = &cobra.Command{
-		Use:   "get <service name>",
+		Use:   "get <name>",
 		Short: "Get a TOTP code",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -135,8 +135,25 @@ func main() {
 		},
 	}
 
+	var cmdDelete = &cobra.Command{
+		Use:   "delete <name>",
+		Short: "Delete a TOTP code",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name := args[0]
+
+			// Delete an item
+			query := keychain.NewItem()
+			query.SetSecClass(keychain.SecClassGenericPassword)
+			query.SetService(serviceName)
+			query.SetAccount(name)
+			query.SetMatchLimit(keychain.MatchLimitOne)
+			return keychain.DeleteItem(query)
+		},
+	}
+
 	var rootCmd = &cobra.Command{Use: os.Args[0]}
-	rootCmd.AddCommand(cmdScan, cmdList, cmdGet)
+	rootCmd.AddCommand(cmdScan, cmdList, cmdGet, cmdDelete)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
