@@ -148,7 +148,13 @@ func main() {
 			query.SetService(serviceName)
 			query.SetAccount(name)
 			query.SetMatchLimit(keychain.MatchLimitOne)
-			return keychain.DeleteItem(query)
+			err := keychain.DeleteItem(query)
+			if err != nil {
+				return err
+			}
+
+			fmt.Printf("Successfully deleted \"%v\".\n", name)
+			return nil
 		},
 	}
 
