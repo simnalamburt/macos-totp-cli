@@ -6,6 +6,7 @@ require (
 	github.com/keybase/go-keychain v0.0.0-20201121013009-976c83ec27a6
 	github.com/makiuchi-d/gozxing v0.1.1
 	github.com/spf13/cobra v1.2.1
+	github.com/xlzd/gotp v0.0.0-20181030022105-c8557ba2c119
 )
 
 require (

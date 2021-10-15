@@ -14,6 +14,7 @@ import (
 	"github.com/makiuchi-d/gozxing"
 	"github.com/makiuchi-d/gozxing/qrcode"
 	"github.com/spf13/cobra"
+	"github.com/xlzd/gotp"
 )
 
 const serviceName = "macOS TOTP CLI"
@@ -105,8 +106,37 @@ func main() {
 		},
 	}
 
+	var cmdGet = &cobra.Command{
+		Use:   "get <service name>",
+		Short: "Get a TOTP code",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name := args[0]
+
+			// Query an item
+			query := keychain.NewItem()
+			query.SetSecClass(keychain.SecClassGenericPassword)
+			query.SetService(serviceName)
+			query.SetAccount(name)
+			query.SetMatchLimit(keychain.MatchLimitOne)
+			query.SetReturnData(true)
+			results, err := keychain.QueryItem(query)
+			if err != nil {
+				return err
+			}
+			if len(results) != 1 {
+				return errors.New("Given name is not found")
+			}
+			r := results[0]
+
+			// Generate a TOTP code
+			fmt.Println(gotp.NewDefaultTOTP(string(r.Data)).Now())
+			return nil
+		},
+	}
+
 	var rootCmd = &cobra.Command{Use: os.Args[0]}
-	rootCmd.AddCommand(cmdScan, cmdList)
+	rootCmd.AddCommand(cmdScan, cmdList, cmdGet)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
