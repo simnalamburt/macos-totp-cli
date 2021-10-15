@@ -23,10 +23,13 @@ Use "totp [command] --help" for more information about a command.
 $ totp scan google ./image.jpg
 Given QR code successfully registered as "google".
 
+$ totp add github
+Type secret: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+Given secret successfully registered as "github".
+
 $ totp list
-facebook
 google
-openvpn
+github
 
 $ totp get google
 123456

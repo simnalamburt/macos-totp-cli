@@ -19,6 +19,19 @@ import (
 
 const serviceName = "macOS TOTP CLI"
 
+func addItem(name, secret string) error {
+	// Store it to the keychain
+	item := keychain.NewItem()
+	item.SetSecClass(keychain.SecClassGenericPassword)
+	item.SetService(serviceName)
+	item.SetAccount(name)
+	item.SetLabel(name)
+	item.SetData([]byte(secret))
+	item.SetSynchronizable(keychain.SynchronizableNo)
+	item.SetAccessible(keychain.AccessibleWhenPasscodeSetThisDeviceOnly)
+	return keychain.AddItem(item)
+}
+
 func main() {
 	var cmdScan = &cobra.Command{
 		Use:   "scan <name> <image>",
@@ -63,21 +76,37 @@ func main() {
 				return errors.New("Given QR code is not for TOTP")
 			}
 
-			// Store it to the keychain
-			item := keychain.NewItem()
-			item.SetSecClass(keychain.SecClassGenericPassword)
-			item.SetService(serviceName)
-			item.SetAccount(name)
-			item.SetLabel(name)
-			item.SetData([]byte(secret))
-			item.SetSynchronizable(keychain.SynchronizableNo)
-			item.SetAccessible(keychain.AccessibleWhenPasscodeSetThisDeviceOnly)
-			err = keychain.AddItem(item)
+			// Save to the keychain
+			err = addItem(name, secret)
 			if err != nil {
 				return err
 			}
-
 			fmt.Printf("Given QR code successfully registered as \"%v\".\n", name)
+			return nil
+		},
+	}
+
+	var cmdAdd = &cobra.Command{
+		Use:   "add <name>",
+		Short: "Manually add a secret to the macOS keychain",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name := args[0]
+
+			// Read secret from stdin
+			var secret string
+			fmt.Print("Type secret: ")
+			fmt.Scanln(&secret)
+			if secret == "" {
+				return errors.New("No secret was given")
+			}
+
+			// Save to the keychain
+			err := addItem(name, secret)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("Given secret successfully registered as \"%v\".\n", name)
 			return nil
 		},
 	}
@@ -159,7 +188,7 @@ func main() {
 	}
 
 	var rootCmd = &cobra.Command{Use: os.Args[0]}
-	rootCmd.AddCommand(cmdScan, cmdList, cmdGet, cmdDelete)
+	rootCmd.AddCommand(cmdScan, cmdAdd, cmdList, cmdGet, cmdDelete)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
