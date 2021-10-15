@@ -10,20 +10,26 @@ import (
 	"net/url"
 	"os"
 
+	keychain "github.com/keybase/go-keychain"
 	"github.com/makiuchi-d/gozxing"
 	"github.com/makiuchi-d/gozxing/qrcode"
 	"github.com/spf13/cobra"
 )
 
+const serviceName = "macOS TOTP CLI"
+
 func main() {
 	var cmdScan = &cobra.Command{
-		Use:   "scan [image file]",
+		Use:   "scan <path of the QR image> <service name>",
 		Short: "Scan a QR code image",
 		Long:  `Scan a QR code image and store it to the macOS keychain.`,
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// open and decode image file
+			// TODO: Infer service name from the QR codes
 			path := args[0]
+			name := args[1]
+
+			// open and decode image file
 			file, err := os.Open(path)
 			if err != nil {
 				return err
@@ -56,9 +62,21 @@ func main() {
 				return errors.New("Given QR code is not for TOTP")
 			}
 
-			// TODO: Store it to the keychain
-			fmt.Println(secret)
+			// Store it to the keychain
+			item := keychain.NewItem()
+			item.SetSecClass(keychain.SecClassGenericPassword)
+			item.SetService(serviceName)
+			item.SetAccount(name)
+			item.SetLabel(name)
+			item.SetData([]byte(secret))
+			item.SetSynchronizable(keychain.SynchronizableNo)
+			item.SetAccessible(keychain.AccessibleWhenPasscodeSetThisDeviceOnly)
+			err = keychain.AddItem(item)
+			if err != nil {
+				return err
+			}
 
+			fmt.Printf("Given QR code successfully registered as \"%v\".\n", name)
 			return nil
 		},
 	}
