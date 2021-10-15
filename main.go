@@ -81,7 +81,7 @@ func main() {
 		},
 	}
 
-	var rootCmd = &cobra.Command{Use: "totp"}
+	var rootCmd = &cobra.Command{Use: os.Args[0]}
 	rootCmd.AddCommand(cmdScan)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
