@@ -81,8 +81,32 @@ func main() {
 		},
 	}
 
+	var cmdList = &cobra.Command{
+		Use:   "list",
+		Short: "List all registered TOTP codes",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// Query items
+			query := keychain.NewItem()
+			query.SetSecClass(keychain.SecClassGenericPassword)
+			query.SetService(serviceName)
+			query.SetMatchLimit(keychain.MatchLimitAll)
+			query.SetReturnAttributes(true)
+			results, err := keychain.QueryItem(query)
+			if err != nil {
+				return err
+			}
+
+			// List query results
+			for _, r := range results {
+				fmt.Println(r.Account)
+			}
+			return nil
+		},
+	}
+
 	var rootCmd = &cobra.Command{Use: os.Args[0]}
-	rootCmd.AddCommand(cmdScan)
+	rootCmd.AddCommand(cmdScan, cmdList)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
