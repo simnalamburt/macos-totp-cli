@@ -20,7 +20,7 @@ Flags:
 
 Use "totp [command] --help" for more information about a command.
 
-$ totp scan ./image.jpg google
+$ totp scan google ./image.jpg
 Given QR code successfully registered as "google".
 
 $ totp list

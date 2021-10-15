@@ -21,13 +21,13 @@ const serviceName = "macOS TOTP CLI"
 
 func main() {
 	var cmdScan = &cobra.Command{
-		Use:   "scan <image> <name>",
+		Use:   "scan <name> <image>",
 		Short: "Scan a QR code image",
 		Long:  `Scan a QR code image and store it to the macOS keychain.`,
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			path := args[0]
-			name := args[1]
+			name := args[0]
+			path := args[1]
 
 			// open and decode image file
 			file, err := os.Open(path)
