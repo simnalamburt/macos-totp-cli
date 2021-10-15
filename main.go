@@ -25,7 +25,6 @@ func main() {
 		Long:  `Scan a QR code image and store it to the macOS keychain.`,
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: Infer service name from the QR codes
 			path := args[0]
 			name := args[1]
 
@@ -58,6 +57,7 @@ func main() {
 				return err
 			}
 			secret := parsed.Query().Get("secret")
+			// Reference: https://github.com/google/google-authenticator/wiki/Key-Uri-Format
 			if parsed.Scheme != "otpauth" || parsed.Host != "totp" || secret == "" {
 				return errors.New("Given QR code is not for TOTP")
 			}
