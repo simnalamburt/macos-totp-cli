@@ -2,6 +2,12 @@ macos-totp-cli
 ========
 macos-totp-cli is a simple TOTP CLI, powered by keychain of macOS.
 
+### Installation
+```bash
+brew install simnalamburt/x/totp
+```
+
+### Usage
 ```console
 $ totp
 Usage:
