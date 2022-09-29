@@ -33,11 +33,14 @@ func addItem(name, secret string) error {
 }
 
 func main() {
+	var useBarcodeHintWhenScan bool
+
 	var cmdScan = &cobra.Command{
 		Use:   "scan <name> <image>",
 		Short: "Scan a QR code image",
 		Long:  `Scan a QR code image and store it to the macOS keychain.`,
 		Args:  cobra.ExactArgs(2),
+
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 			path := args[1]
@@ -60,7 +63,15 @@ func main() {
 
 			// decode image
 			qrReader := qrcode.NewQRCodeReader()
-			result, err := qrReader.Decode(bmp, nil)
+
+			var hint map[gozxing.DecodeHintType]interface{}
+			if useBarcodeHintWhenScan {
+				hint = map[gozxing.DecodeHintType]interface{}{
+					gozxing.DecodeHintType_PURE_BARCODE: struct{}{},
+				}
+			}
+
+			result, err := qrReader.Decode(bmp, hint)
 			if err != nil {
 				return err
 			}
@@ -85,6 +96,14 @@ func main() {
 			return nil
 		},
 	}
+
+	cmdScan.Flags().BoolVarP(
+		&useBarcodeHintWhenScan,
+		"barcode",
+		"b",
+		false,
+		"use PURE_BARCODE hint for decoding. this flag maybe solves FormatException",
+	)
 
 	var cmdAdd = &cobra.Command{
 		Use:   "add <name>",
