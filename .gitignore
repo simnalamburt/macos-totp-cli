@@ -3,3 +3,6 @@
 #     go build -o totp-arm64 && CGO_ENABLED=1 GOARCH=amd64 go build -o totp-amd64
 /totp-amd64
 /totp-arm64
+
+# GoLand
+.idea
