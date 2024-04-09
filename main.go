@@ -206,7 +206,7 @@ func main() {
 		},
 	}
 
-	var rootCmd = &cobra.Command{Use: os.Args[0], Version: "1.0.0"}
+	var rootCmd = &cobra.Command{Use: os.Args[0], Version: "1.0.1"}
 	rootCmd.AddCommand(cmdScan, cmdAdd, cmdList, cmdGet, cmdDelete)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
