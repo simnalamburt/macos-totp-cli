@@ -7,6 +7,14 @@ macos-totp-cli is a simple TOTP CLI, powered by keychain of macOS.
 brew install simnalamburt/x/totp
 ```
 
+totp is also provided as a single static universal binary. Whether you have an
+Mac with Apple silicon or Intel-based Mac, you can install totp by downloading
+just one file.
+
+```bash
+curl -LO https://github.com/simnalamburt/macos-totp-cli/releases/download/v1.0.0/totp && chmod +x totp
+```
+
 ### Usage
 ```console
 $ totp
