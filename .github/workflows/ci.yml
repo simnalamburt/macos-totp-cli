@@ -13,6 +13,6 @@ jobs:
             echo "Go files were not formatted properly"
             exit 1
           fi
-          go build
+          ./build
           go test
           go vet
