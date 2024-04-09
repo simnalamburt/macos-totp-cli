@@ -4,10 +4,15 @@ jobs:
   test:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
         with:
-          go-version: '^1.17.0'
-      - run: go build
-      - run: go test
-      - run: test -z "$(gofmt -l .)"
+          go-version: '^1.22.2'
+      - run: |
+          if [[ "$(go fmt)" ]]; then
+            echo "Go files were not formatted properly"
+            exit 1
+          fi
+          go build
+          go test
+          go vet
