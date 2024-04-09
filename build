@@ -1,0 +1,10 @@
+#!/bin/bash
+# Build universal binary for macOS
+set -euo pipefail; IFS=$'\r\n'
+
+set -x
+
+env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -o totp-arm64
+env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -o totp-amd64
+lipo -create totp-amd64 totp-arm64 -output totp
+rm totp-amd64 totp-arm64
