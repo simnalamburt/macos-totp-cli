@@ -16,3 +16,4 @@ jobs:
           ./build
           go test
           go vet
+
