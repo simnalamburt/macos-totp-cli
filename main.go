@@ -207,49 +207,52 @@ func main() {
 	}
 
 	var cmdEdit = &cobra.Command{
-		Use:   "edit <name>",
-		Short: "Edit an existing TOTP secret",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			name := args[0]
+    Use:   "edit <name>",
+    Short: "Edit an existing TOTP secret",
+    Args:  cobra.ExactArgs(1),
+    RunE: func(cmd *cobra.Command, args []string) error {
+        name := args[0]
 
-			// Query the existing item
-			query := keychain.NewItem()
-			query.SetSecClass(keychain.SecClassGenericPassword)
-			query.SetService(serviceName)
-			query.SetAccount(name)
-			query.SetMatchLimit(keychain.MatchLimitOne)
-			query.SetReturnData(true)
-			results, err := keychain.QueryItem(query)
-			if err != nil {
-				return err
-			}
-			if len(results) != 1 {
-				return errors.New("Given name is not found")
-			}
+        // Query the existing item
+        query := keychain.NewItem()
+        query.SetSecClass(keychain.SecClassGenericPassword)
+        query.SetService(serviceName)
+        query.SetAccount(name)
+        query.SetMatchLimit(keychain.MatchLimitOne)
+        query.SetReturnData(true)
+        results, err := keychain.QueryItem(query)
+        if err != nil {
+            return err
+        }
+        if len(results) != 1 {
+            return errors.New("Given name is not found")
+        }
 
-			// Prompt for the new secret
-			var newSecret string
-			fmt.Print("Type new secret: ")
-			fmt.Scanln(&newSecret)
-			if newSecret == "" {
-				return errors.New("No new secret was given")
-			}
+        // Prompt for the new secret
+        var newSecret string
+        fmt.Print("Type new secret: ")
+        fmt.Scanln(&newSecret)
+        if newSecret == "" {
+            return errors.New("No new secret was given")
+        }
 
-			// Delete the existing item
-			err = keychain.DeleteItem(query)
-			if err != nil {
-				return err
-			}
+        // Update the existing item with the new secret
+        updateItem := keychain.NewItem()
+        updateItem.SetSecClass(keychain.SecClassGenericPassword)
+        updateItem.SetService(serviceName)
+        updateItem.SetAccount(name)
+        updateItem.SetLabel(name)
+        updateItem.SetData([]byte(newSecret))
+        updateItem.SetSynchronizable(keychain.SynchronizableNo)
+        updateItem.SetAccessible(keychain.AccessibleWhenPasscodeSetThisDeviceOnly)
 
-			// Save the new secret to the keychain
-			err = addItem(name, newSecret)
-			if err != nil {
-				return err
-			}
+        err = keychain.UpdateItem(query, updateItem)
+        if err != nil {
+            return err
+        }
 
-			fmt.Printf("Successfully updated the secret for \"%v\".\n", name)
-			return nil
+        fmt.Printf("Successfully updated the secret for \"%v\".\n", name)
+        return nil
 		},
 	}
 	var rootCmd = &cobra.Command{Use: os.Args[0], Version: "1.0.1"}
