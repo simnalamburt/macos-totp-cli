@@ -24,6 +24,7 @@ Usage:
 Available Commands:
   completion  generate the autocompletion script for the specified shell
   delete      Delete a TOTP code
+  edit        Edit an existing TOTP secret
   get         Get a TOTP code
   help        Help about any command
   list        List all registered TOTP codes
@@ -40,6 +41,10 @@ Given QR code successfully registered as "google".
 $ totp add github
 Type secret: ABCDEFGHIJKLMNOPQRSTUVWXYZ
 Given secret successfully registered as "github".
+
+$ totp edit github
+Type secret: ZYXWVUTSRQPONMLKJIHGFEDCBA
+Successfully updated the secret for "github".
 
 $ totp list
 google
