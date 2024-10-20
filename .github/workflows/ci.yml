@@ -5,9 +5,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
-          go-version: '^1.22.2'
+          go-version: stable
       - run: |
           if [[ "$(go fmt)" ]]; then
             echo "Go files were not formatted properly"
