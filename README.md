@@ -22,7 +22,8 @@ Usage:
   totp [command]
 
 Available Commands:
-  completion  generate the autocompletion script for the specified shell
+  add         Manually add a secret to the macOS keychain
+  completion  Generate the autocompletion script for the specified shell
   delete      Delete a TOTP code
   get         Get a TOTP code
   help        Help about any command
@@ -30,7 +31,8 @@ Available Commands:
   scan        Scan a QR code image
 
 Flags:
-  -h, --help   help for totp
+  -h, --help      help for ./totp
+  -v, --version   version for ./totp
 
 Use "totp [command] --help" for more information about a command.
 
