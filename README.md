@@ -29,6 +29,7 @@ Available Commands:
   help        Help about any command
   list        List all registered TOTP codes
   scan        Scan a QR code image
+  temp        Get a TOTP code from a secret without saving it to the keychain
 
 Flags:
   -h, --help      help for ./totp
@@ -52,6 +53,10 @@ $ totp get google
 
 $ totp delete google
 Successfully deleted "google".
+
+$ totp temp
+Type secret: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+123456
 ```
 
 &nbsp;

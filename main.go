@@ -206,8 +206,27 @@ func main() {
 		},
 	}
 
+	var cmdTemp = &cobra.Command{
+		Use:   "temp",
+		Short: "Get a TOTP code from a secret without saving it to the keychain",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// Read secret from stdin
+			var secret string
+			fmt.Print("Type secret: ")
+			fmt.Scanln(&secret)
+			if secret == "" {
+				return errors.New("No secret was given")
+			}
+
+			// Generate a TOTP code
+			fmt.Println(gotp.NewDefaultTOTP(secret).Now())
+			return nil
+		},
+	}
+
 	var rootCmd = &cobra.Command{Use: os.Args[0], Version: "1.0.1"}
-	rootCmd.AddCommand(cmdScan, cmdAdd, cmdList, cmdGet, cmdDelete)
+	rootCmd.AddCommand(cmdScan, cmdAdd, cmdList, cmdGet, cmdDelete, cmdTemp)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
