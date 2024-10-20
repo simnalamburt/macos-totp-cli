@@ -12,7 +12,7 @@ Mac with Apple silicon or Intel-based Mac, you can install totp by downloading
 just one file.
 
 ```bash
-curl -LO https://github.com/simnalamburt/macos-totp-cli/releases/download/v1.1.2/totp && chmod +x totp
+curl -LO https://github.com/simnalamburt/macos-totp-cli/releases/download/v1.1.3/totp && chmod +x totp
 ```
 
 ### Usage

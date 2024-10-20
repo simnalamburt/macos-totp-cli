@@ -271,7 +271,7 @@ func main() {
 		ValidArgsFunction: cobra.NoFileCompletions,
 	}
 
-	var rootCmd = &cobra.Command{Use: "totp", Short: "Simple TOTP CLI, powered by keychain of macOS", Version: "1.1.2"}
+	var rootCmd = &cobra.Command{Use: "totp", Short: "Simple TOTP CLI, powered by keychain of macOS", Version: "1.1.3"}
 	rootCmd.AddCommand(cmdScan, cmdAdd, cmdList, cmdGet, cmdDelete, cmdTemp)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
