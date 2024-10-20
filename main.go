@@ -225,7 +225,7 @@ func main() {
 		},
 	}
 
-	var rootCmd = &cobra.Command{Use: "totp", Short: "Simple TOTP CLI, powered by keychain of macOS", Version: "1.1.0"}
+	var rootCmd = &cobra.Command{Use: "totp", Short: "Simple TOTP CLI, powered by keychain of macOS", Version: "1.1.1"}
 	rootCmd.AddCommand(cmdScan, cmdAdd, cmdList, cmdGet, cmdDelete, cmdTemp)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
