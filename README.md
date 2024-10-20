@@ -32,8 +32,8 @@ Available Commands:
   temp        Get a TOTP code from a secret without saving it to the keychain
 
 Flags:
-  -h, --help      help for ./totp
-  -v, --version   version for ./totp
+  -h, --help      help for totp
+  -v, --version   version for totp
 
 Use "totp [command] --help" for more information about a command.
 
