@@ -114,6 +114,13 @@ func main() {
 			fmt.Printf("Given QR code successfully registered as \"%v\".\n", name)
 			return nil
 		},
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			if len(args) == 1 {
+				return nil, cobra.ShellCompDirectiveDefault
+			}
+
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		},
 	}
 
 	cmdScan.Flags().BoolVarP(
@@ -147,6 +154,7 @@ func main() {
 			fmt.Printf("Given secret successfully registered as \"%v\".\n", name)
 			return nil
 		},
+		ValidArgsFunction: cobra.NoFileCompletions,
 	}
 
 	var cmdList = &cobra.Command{
@@ -164,6 +172,7 @@ func main() {
 			}
 			return nil
 		},
+		ValidArgsFunction: cobra.NoFileCompletions,
 	}
 
 	var cmdGet = &cobra.Command{
@@ -259,6 +268,7 @@ func main() {
 			fmt.Println(gotp.NewDefaultTOTP(secret).Now())
 			return nil
 		},
+		ValidArgsFunction: cobra.NoFileCompletions,
 	}
 
 	var rootCmd = &cobra.Command{Use: "totp", Short: "Simple TOTP CLI, powered by keychain of macOS", Version: "1.1.2"}
