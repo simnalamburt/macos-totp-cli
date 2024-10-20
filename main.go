@@ -32,6 +32,25 @@ func addItem(name, secret string) error {
 	return keychain.AddItem(item)
 }
 
+func listItems() ([]string, error) {
+	// Query items
+	query := keychain.NewItem()
+	query.SetSecClass(keychain.SecClassGenericPassword)
+	query.SetService(serviceName)
+	query.SetMatchLimit(keychain.MatchLimitAll)
+	query.SetReturnAttributes(true)
+	results, err := keychain.QueryItem(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var names []string
+	for _, r := range results {
+		names = append(names, r.Account)
+	}
+	return names, nil
+}
+
 func main() {
 	var useBarcodeHintWhenScan bool
 
@@ -135,20 +154,13 @@ func main() {
 		Short: "List all registered TOTP codes",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Query items
-			query := keychain.NewItem()
-			query.SetSecClass(keychain.SecClassGenericPassword)
-			query.SetService(serviceName)
-			query.SetMatchLimit(keychain.MatchLimitAll)
-			query.SetReturnAttributes(true)
-			results, err := keychain.QueryItem(query)
+			names, err := listItems()
 			if err != nil {
 				return err
 			}
 
-			// List query results
-			for _, r := range results {
-				fmt.Println(r.Account)
+			for _, name := range names {
+				fmt.Println(name)
 			}
 			return nil
 		},
@@ -181,6 +193,18 @@ func main() {
 			fmt.Println(gotp.NewDefaultTOTP(string(r.Data)).Now())
 			return nil
 		},
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			if len(args) != 0 {
+				return nil, cobra.ShellCompDirectiveNoFileComp
+			}
+
+			names, err := listItems()
+			if err != nil {
+				return nil, cobra.ShellCompDirectiveNoFileComp
+			}
+
+			return names, cobra.ShellCompDirectiveNoFileComp
+		},
 	}
 
 	var cmdDelete = &cobra.Command{
@@ -203,6 +227,18 @@ func main() {
 
 			fmt.Printf("Successfully deleted \"%v\".\n", name)
 			return nil
+		},
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			if len(args) != 0 {
+				return nil, cobra.ShellCompDirectiveNoFileComp
+			}
+
+			names, err := listItems()
+			if err != nil {
+				return nil, cobra.ShellCompDirectiveNoFileComp
+			}
+
+			return names, cobra.ShellCompDirectiveNoFileComp
 		},
 	}
 
