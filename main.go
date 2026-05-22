@@ -9,6 +9,7 @@ import (
 	_ "image/png"
 	"net/url"
 	"os"
+	"strings"
 
 	keychain "github.com/keybase/go-keychain"
 	"github.com/makiuchi-d/gozxing"
@@ -147,6 +148,13 @@ func main() {
 			}
 
 			// Save to the keychain
+			// TOTP secrets are expected to be Base32-encoded.
+			// We are intentionally permissive here: if the input is not strictly Base32
+			// (e.g. lowercase, missing padding, or user-provided variants), we normalize it
+			// to uppercase before storing/using it.
+			// This improves UX for QR codes and manual entry while keeping compatibility
+			// with standard TOTP implementations (RFC 4226 / RFC 6238).
+			secret = strings.ToUpper(secret)
 			err := addItem(name, secret)
 			if err != nil {
 				return err
