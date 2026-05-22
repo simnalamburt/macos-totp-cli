@@ -52,6 +52,21 @@ func listItems() ([]string, error) {
 	return names, nil
 }
 
+func normalizeSecret(s string) (string, error) {
+	s = strings.ToUpper(strings.TrimSpace(s))
+	s = strings.ReplaceAll(s, " ", "")
+
+	if s == "" {
+		return "", errors.New("empty secret")
+	}
+
+	if mod := len(s) % 8; mod != 0 {
+		s += strings.Repeat("=", 8-mod)
+	}
+
+	return s, nil
+}
+
 func main() {
 	var useBarcodeHintWhenScan bool
 
@@ -101,7 +116,11 @@ func main() {
 			if err != nil {
 				return err
 			}
-			secret := parsed.Query().Get("secret")
+			secret, err := normalizeSecret(parsed.Query().Get("secret"))
+			if err != nil {
+				return err
+			}
+
 			// Reference: https://github.com/google/google-authenticator/wiki/Key-Uri-Format
 			if parsed.Scheme != "otpauth" || parsed.Host != "totp" || secret == "" {
 				return errors.New("Given QR code is not for TOTP")
@@ -154,8 +173,11 @@ func main() {
 			// to uppercase before storing/using it.
 			// This improves UX for QR codes and manual entry while keeping compatibility
 			// with standard TOTP implementations (RFC 4226 / RFC 6238).
-			secret = strings.ToUpper(secret)
-			err := addItem(name, secret)
+			secret, err := normalizeSecret(strings.ToUpper(secret))
+			if err != nil {
+				return err
+			}
+			err = addItem(name, secret)
 			if err != nil {
 				return err
 			}
@@ -268,8 +290,9 @@ func main() {
 			var secret string
 			fmt.Print("Type secret: ")
 			fmt.Scanln(&secret)
-			if secret == "" {
-				return errors.New("No secret was given")
+			secret, err := normalizeSecret(secret)
+			if err != nil {
+				return err
 			}
 
 			// Generate a TOTP code
