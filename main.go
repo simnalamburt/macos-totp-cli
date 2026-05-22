@@ -122,7 +122,7 @@ func main() {
 			}
 
 			// Reference: https://github.com/google/google-authenticator/wiki/Key-Uri-Format
-			if parsed.Scheme != "otpauth" || parsed.Host != "totp" || secret == "" {
+			if parsed.Scheme != "otpauth" || parsed.Host != "totp" {
 				return errors.New("Given QR code is not for TOTP")
 			}
 
@@ -162,9 +162,6 @@ func main() {
 			var secret string
 			fmt.Print("Type secret: ")
 			fmt.Scanln(&secret)
-			if secret == "" {
-				return errors.New("No secret was given")
-			}
 
 			// Save to the keychain
 			// TOTP secrets are expected to be Base32-encoded.
